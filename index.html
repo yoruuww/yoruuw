@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>yoruuww — Portfolio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #080c10;
+      --surface: #0e1419;
+      --surface2: #141b22;
+      --border: #1e2a35;
+      --accent: #00e5ff;
+      --accent2: #7c3aed;
+      --accent3: #ff4d6d;
+      --text: #e8f0f5;
+      --muted: #5a7080;
+      --green: #00ff9d;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Mono', monospace;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* CUSTOM CURSOR */
+    .cursor {
+      position: fixed; width: 12px; height: 12px;
+      background: var(--accent); border-radius: 50%;
+      pointer-events: none; z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: transform 0.1s, opacity 0.2s;
+      mix-blend-mode: exclusion;
+    }
+    .cursor-ring {
+      position: fixed; width: 36px; height: 36px;
+      border: 1px solid var(--accent); border-radius: 50%;
+      pointer-events: none; z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: transform 0.15s ease, width 0.2s, height 0.2s;
+      opacity: 0.5;
+    }
+
+    /* NOISE TEXTURE OVERLAY */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 1000; opacity: 0.3;
+    }
+
+    /* GRID BG */
+    body::after {
+      content: '';
+      position: fixed; inset: 0;
+      background-image:
+        linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none; z-index: 0;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 1.2rem 3rem;
+      background: rgba(8,12,16,0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      z-index: 100;
+    }
+    .nav-logo {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.1rem; font-weight: 800;
+      color: var(--accent);
+      letter-spacing: 0.05em;
+    }
+    .nav-logo span { color: var(--text); }
+    .nav-links { display: flex; gap: 2.5rem; }
+    .nav-links a {
+      color: var(--muted); text-decoration: none;
+      font-size: 0.75rem; letter-spacing: 0.15em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+      position: relative;
+    }
+    .nav-links a::after {
+      content: ''; position: absolute; bottom: -4px; left: 0;
+      width: 0; height: 1px; background: var(--accent);
+      transition: width 0.3s;
+    }
+    .nav-links a:hover { color: var(--accent); }
+    .nav-links a:hover::after { width: 100%; }
+
+    /* SECTIONS */
+    section { position: relative; z-index: 10; }
+
+    /* HERO */
+    #hero {
+      min-height: 100vh;
+      display: flex; align-items: center;
+      padding: 8rem 3rem 4rem;
+      max-width: 1200px; margin: 0 auto;
+    }
+    .hero-inner {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 4rem; align-items: center; width: 100%;
+    }
+    .hero-tag {
+      font-size: 0.7rem; letter-spacing: 0.3em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 1.5rem;
+      display: flex; align-items: center; gap: 0.8rem;
+    }
+    .hero-tag::before {
+      content: ''; display: block; width: 30px; height: 1px; background: var(--accent);
+    }
+    .hero-name {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(3.5rem, 7vw, 6rem);
+      font-weight: 800; line-height: 0.95;
+      letter-spacing: -0.03em;
+      margin-bottom: 1.5rem;
+    }
+    .hero-name .line { display: block; overflow: hidden; }
+    .hero-name .line span {
+      display: block;
+      animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    .hero-name .line:nth-child(2) span { animation-delay: 0.1s; }
+    .hero-name .line:nth-child(3) span { animation-delay: 0.2s; }
+    .hero-name em {
+      font-style: normal;
+      -webkit-text-stroke: 1px var(--accent);
+      color: transparent;
+    }
+    @keyframes slideUp {
+      from { transform: translateY(110%); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .hero-desc {
+      color: var(--muted); font-size: 0.85rem; line-height: 1.8;
+      margin-bottom: 2.5rem; max-width: 380px;
+    }
+    .hero-btns { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .btn-primary {
+      padding: 0.85rem 2rem; background: var(--accent);
+      color: var(--bg); text-decoration: none;
+      font-family: 'Syne', sans-serif; font-weight: 700;
+      font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase;
+      clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+      transition: background 0.2s, transform 0.2s;
+      display: inline-block;
+    }
+    .btn-primary:hover { background: #fff; transform: translateY(-2px); }
+    .btn-outline {
+      padding: 0.85rem 2rem; border: 1px solid var(--border);
+      color: var(--text); text-decoration: none;
+      font-family: 'Syne', sans-serif; font-weight: 600;
+      font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase;
+      transition: border-color 0.2s, color 0.2s, transform 0.2s;
+      display: inline-block;
+    }
+    .btn-outline:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+
+    /* HERO VISUAL */
+    .hero-visual {
+      display: flex; justify-content: center; align-items: center;
+    }
+    .avatar-wrap {
+      position: relative; width: 320px; height: 320px;
+    }
+    .avatar-bg {
+      position: absolute; inset: 0; border-radius: 50%;
+      background: conic-gradient(from 0deg, var(--accent), var(--accent2), var(--accent3), var(--accent));
+      animation: spin 8s linear infinite;
+      padding: 3px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .avatar-inner {
+      position: absolute; inset: 4px; border-radius: 50%;
+      background: var(--surface2);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Syne', sans-serif;
+      font-size: 5rem; font-weight: 800;
+      color: var(--accent);
+      overflow: hidden;
+    }
+    .avatar-inner span { display: block; animation: pulse 3s ease-in-out infinite; }
+    @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.6; } }
+    .avatar-badge {
+      position: absolute; bottom: 10px; right: 10px;
+      background: var(--green); color: var(--bg);
+      font-size: 0.65rem; font-weight: 700; letter-spacing: 0.1em;
+      padding: 0.3rem 0.7rem;
+      font-family: 'Syne', sans-serif;
+      clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+    }
+    .avatar-orbit {
+      position: absolute; inset: -20px; border-radius: 50%;
+      border: 1px dashed rgba(0,229,255,0.15);
+      animation: spin 20s linear infinite reverse;
+    }
+    .orbit-dot {
+      position: absolute; width: 8px; height: 8px;
+      background: var(--accent2); border-radius: 50%;
+      top: -4px; left: 50%; transform: translateX(-50%);
+      box-shadow: 0 0 10px var(--accent2);
+    }
+
+    /* STATS ROW */
+    .stats-row {
+      display: flex; gap: 3rem; margin-top: 3rem;
+      border-top: 1px solid var(--border); padding-top: 2rem;
+    }
+    .stat { }
+    .stat-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.8rem; font-weight: 800;
+      color: var(--accent);
+    }
+    .stat-label { font-size: 0.7rem; color: var(--muted); letter-spacing: 0.1em; margin-top: 0.2rem; }
+
+    /* ABOUT */
+    #about {
+      padding: 7rem 3rem;
+      max-width: 1200px; margin: 0 auto;
+    }
+    .section-header {
+      display: flex; align-items: center; gap: 1.5rem;
+      margin-bottom: 4rem;
+    }
+    .section-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.75rem; font-weight: 700;
+      color: var(--accent); letter-spacing: 0.2em;
+    }
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 2.2rem; font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+    .section-line {
+      flex: 1; height: 1px;
+      background: linear-gradient(90deg, var(--border), transparent);
+    }
+    .about-grid {
+      display: grid; grid-template-columns: 1.2fr 1fr;
+      gap: 4rem; align-items: start;
+    }
+    .about-text p {
+      color: var(--muted); font-size: 0.875rem; line-height: 1.9;
+      margin-bottom: 1.2rem;
+    }
+    .about-text p strong { color: var(--text); }
+    .about-text p .highlight { color: var(--accent); font-style: italic; }
+
+    /* SKILLS */
+    .skills-grid { display: flex; flex-direction: column; gap: 1rem; }
+    .skill-item {}
+    .skill-header { display: flex; justify-content: space-between; margin-bottom: 0.4rem; }
+    .skill-name { font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; }
+    .skill-pct { font-size: 0.7rem; color: var(--accent); }
+    .skill-bar-bg {
+      height: 3px; background: var(--border); position: relative; overflow: hidden;
+    }
+    .skill-bar-fill {
+      height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2));
+      width: 0; transition: width 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+    }
+    .skill-bar-fill::after {
+      content: ''; position: absolute; right: 0; top: -2px;
+      width: 7px; height: 7px; background: var(--accent);
+      border-radius: 50%; box-shadow: 0 0 8px var(--accent);
+    }
+
+    /* HOBBIES */
+    #hobbies {
+      padding: 7rem 3rem;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    #hobbies .inner { max-width: 1200px; margin: 0 auto; }
+    .hobbies-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem; margin-top: 3rem;
+    }
+    .hobby-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      padding: 2rem 1.5rem;
+      position: relative; overflow: hidden;
+      transition: border-color 0.3s, transform 0.3s;
+      clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
+    }
+    .hobby-card::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(0,229,255,0.05), transparent);
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .hobby-card:hover { border-color: var(--accent); transform: translateY(-4px); }
+    .hobby-card:hover::before { opacity: 1; }
+    .hobby-icon {
+      font-size: 2.2rem; margin-bottom: 1rem;
+      display: block;
+    }
+    .hobby-name {
+      font-family: 'Syne', sans-serif;
+      font-size: 1rem; font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+    .hobby-desc { font-size: 0.72rem; color: var(--muted); line-height: 1.6; }
+    .hobby-card .corner-accent {
+      position: absolute; top: 0; right: 0; width: 40px; height: 40px;
+      background: linear-gradient(225deg, rgba(0,229,255,0.2), transparent);
+    }
+
+    /* GAMES */
+    #games {
+      padding: 7rem 3rem;
+      max-width: 1200px; margin: 0 auto;
+    }
+    .games-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 2rem; margin-top: 3rem;
+    }
+    .game-card {
+      position: relative; overflow: hidden;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      transition: transform 0.3s, border-color 0.3s;
+    }
+    .game-card:hover { transform: translateY(-6px); }
+    .game-card-inner { padding: 2.5rem 2rem; }
+    .game-rank {
+      font-family: 'Syne', sans-serif; font-size: 0.65rem;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 0.8rem;
+    }
+    .game-name {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.6rem; font-weight: 800;
+      line-height: 1; margin-bottom: 0.8rem;
+      letter-spacing: -0.02em;
+    }
+    .game-genre {
+      font-size: 0.7rem; color: var(--muted);
+      letter-spacing: 0.1em; text-transform: uppercase;
+      margin-bottom: 1.5rem;
+    }
+    .game-tags { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .game-tag {
+      font-size: 0.65rem; padding: 0.25rem 0.65rem;
+      border: 1px solid; letter-spacing: 0.05em;
+    }
+    .game-bar {
+      height: 2px; width: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      transform: scaleX(0); transform-origin: left;
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .game-card:hover .game-bar { transform: scaleX(1); }
+
+    /* Valorant */
+    .game-card:nth-child(1) { border-color: rgba(255,77,109,0.3); }
+    .game-card:nth-child(1):hover { border-color: var(--accent3); }
+    .game-card:nth-child(1) .game-name { color: var(--accent3); }
+    .game-card:nth-child(1) .game-tag { border-color: rgba(255,77,109,0.4); color: var(--accent3); }
+    .game-card:nth-child(1) .game-bar { background: var(--accent3); }
+
+    /* MLBB */
+    .game-card:nth-child(2) { border-color: rgba(0,229,255,0.3); }
+    .game-card:nth-child(2):hover { border-color: var(--accent); }
+    .game-card:nth-child(2) .game-name { color: var(--accent); }
+    .game-card:nth-child(2) .game-tag { border-color: rgba(0,229,255,0.4); color: var(--accent); }
+    .game-card:nth-child(2) .game-bar { background: var(--accent); }
+
+    /* PUBGM */
+    .game-card:nth-child(3) { border-color: rgba(124,58,237,0.3); }
+    .game-card:nth-child(3):hover { border-color: var(--accent2); }
+    .game-card:nth-child(3) .game-name { color: var(--accent2); }
+    .game-card:nth-child(3) .game-tag { border-color: rgba(124,58,237,0.4); color: var(--accent2); }
+    .game-card:nth-child(3) .game-bar { background: var(--accent2); }
+
+    .game-icon {
+      position: absolute; right: 1.5rem; top: 1.5rem;
+      font-size: 2.5rem; opacity: 0.2;
+      transition: opacity 0.3s, transform 0.3s;
+    }
+    .game-card:hover .game-icon { opacity: 0.5; transform: scale(1.1) rotate(-5deg); }
+
+    /* CONTACT */
+    #contact {
+      padding: 7rem 3rem;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+    }
+    #contact .inner { max-width: 1200px; margin: 0 auto; }
+    .contact-wrap {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 6rem; align-items: center;
+    }
+    .contact-big {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 800; line-height: 1.1;
+      letter-spacing: -0.03em;
+    }
+    .contact-big em { font-style: normal; color: var(--accent); }
+    .contact-sub {
+      color: var(--muted); font-size: 0.85rem;
+      line-height: 1.7; margin-top: 1.5rem;
+    }
+    .contact-links { display: flex; flex-direction: column; gap: 1rem; margin-top: 2rem; }
+    .contact-link {
+      display: flex; align-items: center; gap: 1rem;
+      padding: 1rem 1.5rem;
+      border: 1px solid var(--border);
+      color: var(--text); text-decoration: none;
+      font-size: 0.8rem; letter-spacing: 0.05em;
+      transition: border-color 0.2s, color 0.2s, transform 0.2s;
+      background: var(--surface2);
+    }
+    .contact-link:hover { border-color: var(--accent); color: var(--accent); transform: translateX(6px); }
+    .contact-link-icon { font-size: 1.1rem; }
+
+    /* FOOTER */
+    footer {
+      padding: 2rem 3rem;
+      border-top: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: center;
+      max-width: 100%; position: relative; z-index: 10;
+    }
+    .footer-copy { font-size: 0.7rem; color: var(--muted); }
+    .footer-copy span { color: var(--accent); }
+    .footer-back {
+      font-size: 0.7rem; color: var(--muted);
+      text-decoration: none; letter-spacing: 0.1em;
+      transition: color 0.2s;
+    }
+    .footer-back:hover { color: var(--accent); }
+
+    /* SCROLLBAR */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--accent2); border-radius: 2px; }
+
+    /* REVEAL ANIMATION */
+    .reveal {
+      opacity: 0; transform: translateY(30px);
+      transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+
+    /* GLITCH EFFECT */
+    .glitch {
+      position: relative; display: inline-block;
+    }
+    .glitch::before, .glitch::after {
+      content: attr(data-text);
+      position: absolute; top: 0; left: 0;
+      font-family: inherit; font-size: inherit;
+      font-weight: inherit; color: inherit;
+    }
+    .glitch::before {
+      color: var(--accent3);
+      animation: glitch1 4s infinite;
+      clip-path: polygon(0 0, 100% 0, 100% 35%, 0 35%);
+    }
+    .glitch::after {
+      color: var(--accent);
+      animation: glitch2 4s infinite;
+      clip-path: polygon(0 65%, 100% 65%, 100% 100%, 0 100%);
+    }
+    @keyframes glitch1 {
+      0%, 90%, 100% { transform: translateX(0); opacity: 0; }
+      92% { transform: translateX(-3px); opacity: 1; }
+      94% { transform: translateX(3px); opacity: 1; }
+      96% { transform: translateX(0); opacity: 0; }
+    }
+    @keyframes glitch2 {
+      0%, 90%, 100% { transform: translateX(0); opacity: 0; }
+      93% { transform: translateX(3px); opacity: 1; }
+      95% { transform: translateX(-3px); opacity: 1; }
+      97% { transform: translateX(0); opacity: 0; }
+    }
+
+    /* TYPING */
+    .typing-text::after {
+      content: '|';
+      animation: blink 0.8s step-end infinite;
+      color: var(--accent);
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+    @media (max-width: 900px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { gap: 1.5rem; }
+      #hero { padding: 7rem 1.5rem 3rem; }
+      .hero-inner { grid-template-columns: 1fr; }
+      .hero-visual { display: none; }
+      #about { padding: 5rem 1.5rem; }
+      .about-grid { grid-template-columns: 1fr; }
+      #hobbies { padding: 5rem 1.5rem; }
+      .hobbies-grid { grid-template-columns: repeat(2, 1fr); }
+      #games { padding: 5rem 1.5rem; }
+      .games-grid { grid-template-columns: 1fr; }
+      #contact { padding: 5rem 1.5rem; }
+      .contact-wrap { grid-template-columns: 1fr; gap: 3rem; }
+      footer { padding: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-logo">yoru<span>uww</span></div>
+    <div class="nav-links">
+      <a href="#about">About</a>
+      <a href="#hobbies">Hobbies</a>
+      <a href="#games">Games</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-inner">
+      <div class="hero-left">
+        <div class="hero-tag">Available for collab</div>
+        <h1 class="hero-name">
+          <span class="line"><span>Hello,</span></span>
+          <span class="line"><span>I'm <em class="glitch" data-text="Yoruu">Yoruu</em></span></span>
+          <span class="line"><span>Dev & Gamer</span></span>
+        </h1>
+        <p class="hero-desc typing-text" id="typingEl"></p>
+        <div class="hero-btns">
+          <a href="#about" class="btn-primary">About Me</a>
+          <a href="#contact" class="btn-outline">Contact</a>
+        </div>
+        <div class="stats-row">
+          <div class="stat">
+            <div class="stat-num">3+</div>
+            <div class="stat-label">Games Played</div>
+          </div>
+          <div class="stat">
+            <div class="stat-num">4</div>
+            <div class="stat-label">Hobbies</div>
+          </div>
+          <div class="stat">
+            <div class="stat-num">∞</div>
+            <div class="stat-label">Passion</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-visual">
+        <div class="avatar-wrap">
+          <div class="avatar-orbit"><div class="orbit-dot"></div></div>
+          <div class="avatar-bg"></div>
+          <div class="avatar-inner"><span>Y</span></div>
+          <div class="avatar-badge">● ONLINE</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="section-header reveal">
+      <span class="section-num">01 /</span>
+      <h2 class="section-title">About Me</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="about-grid">
+      <div class="about-text reveal">
+        <p>Halo! Nama aku <strong>Yoruu</strong> — seorang developer muda yang <span class="highlight">passionate</span> banget di dunia teknologi dan gaming. Aku suka bangun hal-hal yang meaningful, mulai dari aplikasi web sampai ngoding project iseng yang seru.</p>
+        <p>Sehari-hari aku ngabisin waktu buat nulis kode, explore teknologi baru, dan tentunya main game buat recharge energi. Buat aku, <strong>coding itu bukan cuma kerjaan — it's a lifestyle.</strong></p>
+        <p>Aku percaya bahwa developer yang baik bukan cuma yang jago teknikal, tapi juga yang punya <span class="highlight">kreativitas</span> dan empati buat user. Dan ya, kalah di Valorant itu salah satu hal yang bikin aku makin semangat ngoding 😄</p>
+      </div>
+      <div class="skills-grid reveal reveal-delay-1">
+        <div class="skill-item" data-pct="80">
+          <div class="skill-header">
+            <span class="skill-name">PHP / Laravel</span>
+            <span class="skill-pct">80%</span>
+          </div>
+          <div class="skill-bar-bg"><div class="skill-bar-fill" style="--target: 80%"></div></div>
+        </div>
+        <div class="skill-item" data-pct="75">
+          <div class="skill-header">
+            <span class="skill-name">HTML / CSS</span>
+            <span class="skill-pct">75%</span>
+          </div>
+          <div class="skill-bar-bg"><div class="skill-bar-fill" style="--target: 75%"></div></div>
+        </div>
+        <div class="skill-item" data-pct="65">
+          <div class="skill-header">
+            <span class="skill-name">JavaScript</span>
+            <span class="skill-pct">65%</span>
+          </div>
+          <div class="skill-bar-bg"><div class="skill-bar-fill" style="--target: 65%"></div></div>
+        </div>
+        <div class="skill-item" data-pct="70">
+          <div class="skill-header">
+            <span class="skill-name">MySQL</span>
+            <span class="skill-pct">70%</span>
+          </div>
+          <div class="skill-bar-bg"><div class="skill-bar-fill" style="--target: 70%"></div></div>
+        </div>
+        <div class="skill-item" data-pct="60">
+          <div class="skill-header">
+            <span class="skill-name">Git / GitHub</span>
+            <span class="skill-pct">60%</span>
+          </div>
+          <div class="skill-bar-bg"><div class="skill-bar-fill" style="--target: 60%"></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOBBIES -->
+  <section id="hobbies">
+    <div class="inner">
+      <div class="section-header reveal">
+        <span class="section-num">02 /</span>
+        <h2 class="section-title">My Hobbies</h2>
+        <div class="section-line"></div>
+      </div>
+      <div class="hobbies-grid">
+        <div class="hobby-card reveal">
+          <div class="corner-accent"></div>
+          <span class="hobby-icon">🎮</span>
+          <div class="hobby-name">Playing Games</div>
+          <div class="hobby-desc">Dari FPS sampai battle royale, gaming adalah cara terbaik buat relax dan asah strategi.</div>
+        </div>
+        <div class="hobby-card reveal reveal-delay-1">
+          <div class="corner-accent"></div>
+          <span class="hobby-icon">💻</span>
+          <div class="hobby-name">Ngoding</div>
+          <div class="hobby-desc">Nulis kode itu kayak nge-puzzle — challenging tapi puas banget kalau berhasil. Suka explore framework baru.</div>
+        </div>
+        <div class="hobby-card reveal reveal-delay-2">
+          <div class="corner-accent"></div>
+          <span class="hobby-icon">🎧</span>
+          <div class="hobby-name">Denger Musik</div>
+          <div class="hobby-desc">Musik adalah teman setia waktu coding. Lo-fi, indie, atau playlist random — selalu bikin produktif.</div>
+        </div>
+        <div class="hobby-card reveal reveal-delay-3">
+          <div class="corner-accent"></div>
+          <span class="hobby-icon">🏸</span>
+          <div class="hobby-name">Badminton</div>
+          <div class="hobby-desc">Olahraga favorit buat jaga stamina. Smash di lapangan sama serunya kayak headshot di Valorant.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GAMES -->
+  <section id="games">
+    <div class="section-header reveal">
+      <span class="section-num">03 /</span>
+      <h2 class="section-title">Games I Play</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="games-grid">
+      <div class="game-card reveal">
+        <div class="game-bar"></div>
+        <div class="game-icon">🔫</div>
+        <div class="game-card-inner">
+          <div class="game-rank">Tactical FPS</div>
+          <div class="game-name">VALORANT</div>
+          <div class="game-genre">5v5 · Riot Games</div>
+          <div class="game-tags">
+            <span class="game-tag">FPS</span>
+            <span class="game-tag">Tactical</span>
+            <span class="game-tag">Competitive</span>
+          </div>
+        </div>
+      </div>
+      <div class="game-card reveal reveal-delay-1">
+        <div class="game-bar"></div>
+        <div class="game-icon">⚔️</div>
+        <div class="game-card-inner">
+          <div class="game-rank">Mobile MOBA</div>
+          <div class="game-name">MLBB</div>
+          <div class="game-genre">5v5 · Moonton</div>
+          <div class="game-tags">
+            <span class="game-tag">MOBA</span>
+            <span class="game-tag">Strategy</span>
+            <span class="game-tag">Mobile</span>
+          </div>
+        </div>
+      </div>
+      <div class="game-card reveal reveal-delay-2">
+        <div class="game-bar"></div>
+        <div class="game-icon">🪖</div>
+        <div class="game-card-inner">
+          <div class="game-rank">Battle Royale</div>
+          <div class="game-name">PUBG M</div>
+          <div class="game-genre">100 Players · Krafton</div>
+          <div class="game-tags">
+            <span class="game-tag">BR</span>
+            <span class="game-tag">Survival</span>
+            <span class="game-tag">Mobile</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="inner">
+      <div class="contact-wrap">
+        <div class="reveal">
+          <div class="contact-big">Let's <em>connect</em> &amp; build together</div>
+          <p class="contact-sub">Open untuk kolaborasi, ngobrol soal tech, atau sekadar say hi. Feel free to reach out!</p>
+        </div>
+        <div class="reveal reveal-delay-1">
+          <div class="contact-links">
+            <a href="https://github.com/yoruuww" class="contact-link" target="_blank">
+              <span class="contact-link-icon">🐙</span>
+              github.com/yoruuww
+            </a>
+            <a href="#" class="contact-link">
+              <span class="contact-link-icon">📧</span>
+              yoruuww@email.com
+            </a>
+            <a href="#" class="contact-link">
+              <span class="contact-link-icon">💬</span>
+              Discord: yoruuww
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-copy">© 2025 <span>yoruuww</span> — All rights reserved</div>
+    <a href="#hero" class="footer-back">↑ Back to top</a>
+  </footer>
+
+  <script>
+    // CURSOR
+    const cursor = document.getElementById('cursor');
+    const ring = document.getElementById('cursorRing');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+    document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+    function animCursor() {
+      cursor.style.left = mx + 'px'; cursor.style.top = my + 'px';
+      rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12;
+      ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+      requestAnimationFrame(animCursor);
+    }
+    animCursor();
+    document.querySelectorAll('a, button').forEach(el => {
+      el.addEventListener('mouseenter', () => { ring.style.width = '56px'; ring.style.height = '56px'; ring.style.opacity = '0.8'; });
+      el.addEventListener('mouseleave', () => { ring.style.width = '36px'; ring.style.height = '36px'; ring.style.opacity = '0.5'; });
+    });
+
+    // TYPING
+    const phrases = [
+      'Web Developer & Gamer',
+      'Laravel Enthusiast',
+      'Code. Play. Repeat.',
+      'Building cool things ✨'
+    ];
+    let pi = 0, ci = 0, del = false;
+    const el = document.getElementById('typingEl');
+    function type() {
+      const phrase = phrases[pi];
+      if (!del) {
+        el.textContent = phrase.slice(0, ++ci);
+        if (ci === phrase.length) { del = true; setTimeout(type, 1800); return; }
+        setTimeout(type, 80);
+      } else {
+        el.textContent = phrase.slice(0, --ci);
+        if (ci === 0) { del = false; pi = (pi + 1) % phrases.length; setTimeout(type, 400); return; }
+        setTimeout(type, 40);
+      }
+    }
+    type();
+
+    // REVEAL
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.15 });
+    document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+    // SKILL BARS
+    const barObs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          const fills = e.target.querySelectorAll('.skill-bar-fill');
+          fills.forEach(f => {
+            const pct = f.style.getPropertyValue('--target');
+            f.style.width = pct;
+          });
+        }
+      });
+    }, { threshold: 0.3 });
+    const skillSection = document.querySelector('.skills-grid');
+    if (skillSection) barObs.observe(skillSection);
+  </script>
+</body>
+</html>
